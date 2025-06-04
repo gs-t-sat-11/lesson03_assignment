@@ -69,7 +69,7 @@ function addCard(listId) {
     
     const cardHtml = `
         <div class="card" draggable="true" ondragstart="drag(event)" id="${newCardId}">
-            <div class="card-content" contenteditable="true">新しいタスク</div>
+            <div class="card-content" contenteditable="true" data-placeholder="新しいタスク"></div>
             <button class="delete-card-btn" onclick="deleteCard('${newCardId}')">×</button>
         </div>
     `;
@@ -78,11 +78,10 @@ function addCard(listId) {
     const cardsContainer = list.querySelector('.cards-container');
     cardsContainer.insertAdjacentHTML('beforeend', cardHtml);
     
-    // 新しく追加されたカードのテキストを選択状態にする
+    // 新しく追加されたカードにフォーカスを当てる
     const newCard = document.getElementById(newCardId);
     const cardContent = newCard.querySelector('.card-content');
     cardContent.focus();
-    cardContent.select();
     
     saveToLocalStorage();
 }
