@@ -10,6 +10,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // ボード追加ボタンのイベントリスナー
     document.getElementById('addBoardBtn').addEventListener('click', addBoard);
     
+    // 設定ボタンのイベントリスナー
+    document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
+    
+    // 設定ダイアログのイベントリスナー
+    document.getElementById('closeSettingsBtn').addEventListener('click', closeSettingsModal);
+    document.getElementById('dataClearBtn').addEventListener('click', showDataClearConfirm);
+    
+    // 確認ダイアログのイベントリスナー
+    document.getElementById('cancelBtn').addEventListener('click', closeConfirmModal);
+    document.getElementById('confirmBtn').addEventListener('click', handleConfirmAction);
+    
+    // モーダルオーバーレイクリックで閉じる
+    document.getElementById('settingsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSettingsModal();
+        }
+    });
+    
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeConfirmModal();
+        }
+    });
+    
     // 初期化時にローカルストレージからデータを読み込み
     loadFromLocalStorage();
     
@@ -552,4 +576,136 @@ function getListDragAfterElement(container, x) {
             return closest;
         }
     }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// 設定モーダル関連の機能
+let currentConfirmAction = null;
+
+// 設定ダイアログを開く
+function openSettingsModal() {
+    document.getElementById('settingsModal').classList.add('show');
+}
+
+// 設定ダイアログを閉じる
+function closeSettingsModal() {
+    document.getElementById('settingsModal').classList.remove('show');
+}
+
+// 確認ダイアログを開く
+function openConfirmModal(message, action) {
+    document.getElementById('confirmMessage').textContent = message;
+    currentConfirmAction = action;
+    document.getElementById('confirmModal').classList.add('show');
+}
+
+// 確認ダイアログを閉じる
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+    currentConfirmAction = null;
+}
+
+// データクリア確認を表示
+function showDataClearConfirm() {
+    openConfirmModal(
+        '全てのデータを削除して初期状態に戻します。この操作は元に戻せません。続行しますか？',
+        'clearData'
+    );
+}
+
+// 確認アクションを処理
+function handleConfirmAction() {
+    if (currentConfirmAction === 'clearData') {
+        clearAllData();
+    }
+    closeConfirmModal();
+}
+
+// 全データをクリアして初期状態に戻す
+function clearAllData() {
+    // LocalStorageをクリア
+    localStorage.removeItem('trelloApp');
+    localStorage.removeItem('cardCounter');
+    localStorage.removeItem('listCounter');
+    localStorage.removeItem('boardCounter');
+    
+    // カウンターをリセット
+    cardCounter = 2;
+    listCounter = 3;
+    boardCounter = 1;
+    
+    // デフォルトのHTML構造を設定
+    const defaultHtml = `
+        <div class="board" id="board-1">
+            <div class="board-header">
+                <h2 class="board-title" contenteditable="true">マイボード</h2>
+                <button class="delete-board-btn" onclick="deleteBoard('board-1')">×</button>
+            </div>
+            <div class="lists-container" ondrop="dropList(event)" ondragover="allowDropList(event)">
+                <!-- To Do リスト -->
+                <div class="list" id="list-1" data-board="board-1" draggable="true" ondragstart="dragList(event)" ondragend="endDragList(event)">
+                    <div class="list-header">
+                        <div class="list-drag-handle">⋮⋮</div>
+                        <h3 class="list-title" contenteditable="true">To Do</h3>
+                        <button class="delete-list-btn" onclick="deleteList('list-1')">×</button>
+                    </div>
+                    <div class="cards-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <!-- サンプルカード -->
+                        <div class="card" draggable="true" ondragstart="drag(event)" id="card-1">
+                            <div class="card-content" contenteditable="true">サンプルタスク1</div>
+                            <button class="delete-card-btn" onclick="deleteCard('card-1')">×</button>
+                        </div>
+                    </div>
+                    <button class="add-card-btn" onclick="addCard('list-1')">+ カードを追加</button>
+                </div>
+
+                <!-- In Progress リスト -->
+                <div class="list" id="list-2" data-board="board-1" draggable="true" ondragstart="dragList(event)" ondragend="endDragList(event)">
+                    <div class="list-header">
+                        <div class="list-drag-handle">⋮⋮</div>
+                        <h3 class="list-title" contenteditable="true">In Progress</h3>
+                        <button class="delete-list-btn" onclick="deleteList('list-2')">×</button>
+                    </div>
+                    <div class="cards-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        <div class="card" draggable="true" ondragstart="drag(event)" id="card-2">
+                            <div class="card-content" contenteditable="true">サンプルタスク2</div>
+                            <button class="delete-card-btn" onclick="deleteCard('card-2')">×</button>
+                        </div>
+                    </div>
+                    <button class="add-card-btn" onclick="addCard('list-2')">+ カードを追加</button>
+                </div>
+
+                <!-- Done リスト -->
+                <div class="list" id="list-3" data-board="board-1" draggable="true" ondragstart="dragList(event)" ondragend="endDragList(event)">
+                    <div class="list-header">
+                        <div class="list-drag-handle">⋮⋮</div>
+                        <h3 class="list-title" contenteditable="true">Done</h3>
+                        <button class="delete-list-btn" onclick="deleteList('list-3')">×</button>
+                    </div>
+                    <div class="cards-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    </div>
+                    <button class="add-card-btn" onclick="addCard('list-3')">+ カードを追加</button>
+                </div>
+
+                <!-- 新しいリストを追加ボタン -->
+                <div class="add-list-container">
+                    <button class="add-list-btn" onclick="addList('board-1')">+ リストを追加</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // ボードコンテナに初期状態を設定
+    document.getElementById('boardContainer').innerHTML = defaultHtml;
+    
+    // イベントリスナーを再設定
+    attachEventListeners();
+    
+    // LocalStorageに保存
+    saveToLocalStorage();
+    
+    // 設定ダイアログを閉じる
+    closeSettingsModal();
+    
+    // 成功メッセージを表示
+    alert('データがクリアされ、初期状態に戻りました。');
 }

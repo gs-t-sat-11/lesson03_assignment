@@ -9,7 +9,10 @@
 <body>
     <header class="header">
         <h1 class="app-title">Trello風タスク管理アプリ</h1>
-        <button class="add-board-btn" id="addBoardBtn">新しいボードを追加</button>
+        <div class="header-buttons">
+            <button class="add-board-btn" id="addBoardBtn">新しいボードを追加</button>
+            <button class="settings-btn" id="settingsBtn">⚙️ 設定</button>
+        </div>
     </header>
 
     <main class="main-content">
@@ -74,6 +77,39 @@
             </div>
         </div>
     </main>
+
+    <!-- 設定ダイアログ -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>設定</h3>
+                <button class="modal-close-btn" id="closeSettingsBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-section">
+                    <h4>データ管理</h4>
+                    <p>全てのボード、リスト、カードを初期状態に戻します。</p>
+                    <button class="data-clear-btn" id="dataClearBtn">データをクリア</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 確認ダイアログ -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content confirm-modal">
+            <div class="modal-header">
+                <h3>確認</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">この操作を実行しますか？</p>
+                <div class="confirm-buttons">
+                    <button class="cancel-btn" id="cancelBtn">キャンセル</button>
+                    <button class="confirm-btn" id="confirmBtn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
