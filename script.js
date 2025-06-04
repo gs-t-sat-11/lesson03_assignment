@@ -392,7 +392,7 @@ function clearSearch() {
 function dragList(event) {
     // ドラッグハンドル以外からの開始は無効にする
     const dragHandle = event.currentTarget.querySelector('.list-drag-handle');
-    if (!dragHandle.contains(event.target) && !event.target.classList.contains('list-drag-handle')) {
+    if (!dragHandle || (!dragHandle.contains(event.target) && !event.target.classList.contains('list-drag-handle'))) {
         event.preventDefault();
         return;
     }
