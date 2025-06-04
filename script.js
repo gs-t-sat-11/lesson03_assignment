@@ -74,6 +74,8 @@ function attachEventListeners() {
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
         card.addEventListener('dragstart', function(e) {
+            // イベント伝播を停止してリストドラッグイベントとの干渉を防ぐ
+            e.stopPropagation();
             drag(e);
         });
         // ドラッグ終了時のイベントリスナーも設定
@@ -270,6 +272,9 @@ function deleteBoard(boardId) {
 
 // ドラッグ開始
 function drag(event) {
+    // リストのドラッグイベントとの干渉を防ぐ
+    event.stopPropagation();
+    
     draggedElement = event.target;
     event.target.classList.add('dragging');
     event.dataTransfer.effectAllowed = 'move';
@@ -467,6 +472,14 @@ let listDragStartY = 0;
 // リストドラッグ開始
 function dragList(event) {
     console.log('dragList called', event.target, event.currentTarget);
+    
+    // カードからのドラッグイベントをチェック（イベントバブリング対策）
+    if (event.target.closest('.card')) {
+        console.log('Drag prevented: originating from card');
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+    }
     
     // マウスの座標を記録
     listDragStartX = event.clientX;
