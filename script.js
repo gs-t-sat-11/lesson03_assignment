@@ -48,6 +48,11 @@ function attachEventListeners() {
         card.addEventListener('dragstart', function(e) {
             drag(e);
         });
+        // ドラッグ終了時のイベントリスナーも設定
+        card.addEventListener('dragend', function(e) {
+            e.target.classList.remove('dragging');
+            draggedElement = null;
+        });
     });
     
     // すべてのカードコンテナにドロップイベントを設定
@@ -195,6 +200,12 @@ function drag(event) {
     event.target.classList.add('dragging');
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/html', event.target.outerHTML);
+    
+    // ドラッグ終了時に必ずdraggingクラスを削除するイベントリスナーを追加
+    event.target.addEventListener('dragend', function() {
+        event.target.classList.remove('dragging');
+        draggedElement = null;
+    }, { once: true });
 }
 
 // ドラッグ許可
