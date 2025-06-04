@@ -130,7 +130,13 @@ function addList(boardId) {
     const newList = document.getElementById(newListId);
     const listTitle = newList.querySelector('.list-title');
     listTitle.focus();
-    listTitle.select();
+    
+    // contenteditable要素の場合は、テキストを全選択
+    const range = document.createRange();
+    range.selectNodeContents(listTitle);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
     
     saveToLocalStorage();
 }
