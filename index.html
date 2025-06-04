@@ -20,9 +20,9 @@
                     <h2 class="board-title" contenteditable="true">マイボード</h2>
                     <button class="delete-board-btn" onclick="deleteBoard('board-1')">×</button>
                 </div>
-                <div class="lists-container">
+                <div class="lists-container" ondrop="dropList(event)" ondragover="allowDropList(event)">
                     <!-- To Do リスト -->
-                    <div class="list" id="list-1" data-board="board-1">
+                    <div class="list" id="list-1" data-board="board-1" draggable="true" ondragstart="dragList(event)" ondragend="endDragList(event)">
                         <div class="list-header">
                             <h3 class="list-title" contenteditable="true">To Do</h3>
                             <button class="delete-list-btn" onclick="deleteList('list-1')">×</button>
@@ -38,7 +38,7 @@
                     </div>
 
                     <!-- In Progress リスト -->
-                    <div class="list" id="list-2" data-board="board-1">
+                    <div class="list" id="list-2" data-board="board-1" draggable="true" ondragstart="dragList(event)" ondragend="endDragList(event)">
                         <div class="list-header">
                             <h3 class="list-title" contenteditable="true">In Progress</h3>
                             <button class="delete-list-btn" onclick="deleteList('list-2')">×</button>
@@ -53,7 +53,7 @@
                     </div>
 
                     <!-- Done リスト -->
-                    <div class="list" id="list-3" data-board="board-1">
+                    <div class="list" id="list-3" data-board="board-1" draggable="true" ondragstart="dragList(event)" ondragend="endDragList(event)">
                         <div class="list-header">
                             <h3 class="list-title" contenteditable="true">Done</h3>
                             <button class="delete-list-btn" onclick="deleteList('list-3')">×</button>

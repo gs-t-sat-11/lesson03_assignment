@@ -293,6 +293,35 @@ body {
     border: 2px dashed #999;
 }
 
+/* リストドラッグ&ドロップのスタイル */
+.list.list-dragging {
+    opacity: 0.6;
+    transform: rotate(2deg) scale(0.95);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: none;
+}
+
+.lists-container.list-drag-over {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+}
+
+/* リストヘッダーにドラッグ用のカーソルを追加 */
+.list-header {
+    cursor: grab;
+}
+
+.list-header:active {
+    cursor: grabbing;
+}
+
+/* 編集中のタイトルはドラッグ不可 */
+.list-title:focus {
+    cursor: text;
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
     .header {
