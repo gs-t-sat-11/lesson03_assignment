@@ -436,23 +436,17 @@ function clearSearch() {
     });
 }
 
+// リストドラッグ開始時の座標を記録
+let listDragStartX = 0;
+let listDragStartY = 0;
+
 // リストドラッグ開始
 function dragList(event) {
     console.log('dragList called', event.target, event.currentTarget);
     
-    // contenteditable要素からのドラッグは絶対に無効にする
-    if (event.target.contentEditable === 'true' || event.target.closest('[contenteditable="true"]')) {
-        console.log('Drag prevented: contenteditable element');
-        event.preventDefault();
-        return;
-    }
-    
-    // 削除ボタンからのドラッグも無効にする
-    if (event.target.classList.contains('delete-list-btn') || event.target.closest('.delete-list-btn')) {
-        console.log('Drag prevented: delete button');
-        event.preventDefault();
-        return;
-    }
+    // マウスの座標を記録
+    listDragStartX = event.clientX;
+    listDragStartY = event.clientY;
     
     // ドラッグハンドルを探す
     const dragHandle = event.currentTarget.querySelector('.list-drag-handle');
@@ -462,15 +456,30 @@ function dragList(event) {
         return;
     }
     
-    // ドラッグハンドルからの開始かチェック（より柔軟に）
-    const isFromDragHandle = event.target === dragHandle || 
-                           dragHandle.contains(event.target) ||
-                           event.target.classList.contains('list-drag-handle');
+    // ドラッグハンドルの領域をチェック
+    const handleRect = dragHandle.getBoundingClientRect();
+    const isInHandleArea = event.clientX >= handleRect.left && 
+                          event.clientX <= handleRect.right && 
+                          event.clientY >= handleRect.top && 
+                          event.clientY <= handleRect.bottom;
     
-    console.log('isFromDragHandle:', isFromDragHandle, 'target:', event.target, 'dragHandle:', dragHandle);
+    console.log('Mouse position:', {x: event.clientX, y: event.clientY});
+    console.log('Handle area:', handleRect);
+    console.log('isInHandleArea:', isInHandleArea);
     
-    if (!isFromDragHandle) {
-        console.log('Drag prevented: not from drag handle');
+    // ハンドルエリア外からのドラッグは無効
+    if (!isInHandleArea) {
+        console.log('Drag prevented: not in handle area');
+        event.preventDefault();
+        return;
+    }
+    
+    // contenteditable要素やボタンからのドラッグも念のためチェック
+    if (event.target.contentEditable === 'true' || 
+        event.target.closest('[contenteditable="true"]') ||
+        event.target.classList.contains('delete-list-btn') ||
+        event.target.closest('.delete-list-btn')) {
+        console.log('Drag prevented: from interactive element');
         event.preventDefault();
         return;
     }
