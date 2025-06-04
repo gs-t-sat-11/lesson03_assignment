@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello風タスク管理アプリ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="app-title">Trello風タスク管理アプリ</h1>
+        <button class="add-board-btn" id="addBoardBtn">新しいボードを追加</button>
+    </header>
+
+    <main class="main-content">
+        <div class="board-container" id="boardContainer">
+            <!-- デフォルトボード -->
+            <div class="board" id="board-1">
+                <div class="board-header">
+                    <h2 class="board-title" contenteditable="true">マイボード</h2>
+                    <button class="delete-board-btn" onclick="deleteBoard('board-1')">×</button>
+                </div>
+                <div class="lists-container">
+                    <!-- To Do リスト -->
+                    <div class="list" id="list-1" data-board="board-1">
+                        <div class="list-header">
+                            <h3 class="list-title" contenteditable="true">To Do</h3>
+                            <button class="delete-list-btn" onclick="deleteList('list-1')">×</button>
+                        </div>
+                        <div class="cards-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <!-- サンプルカード -->
+                            <div class="card" draggable="true" ondragstart="drag(event)" id="card-1">
+                                <div class="card-content" contenteditable="true">サンプルタスク1</div>
+                                <button class="delete-card-btn" onclick="deleteCard('card-1')">×</button>
+                            </div>
+                        </div>
+                        <button class="add-card-btn" onclick="addCard('list-1')">+ カードを追加</button>
+                    </div>
+
+                    <!-- In Progress リスト -->
+                    <div class="list" id="list-2" data-board="board-1">
+                        <div class="list-header">
+                            <h3 class="list-title" contenteditable="true">In Progress</h3>
+                            <button class="delete-list-btn" onclick="deleteList('list-2')">×</button>
+                        </div>
+                        <div class="cards-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <div class="card" draggable="true" ondragstart="drag(event)" id="card-2">
+                                <div class="card-content" contenteditable="true">サンプルタスク2</div>
+                                <button class="delete-card-btn" onclick="deleteCard('card-2')">×</button>
+                            </div>
+                        </div>
+                        <button class="add-card-btn" onclick="addCard('list-2')">+ カードを追加</button>
+                    </div>
+
+                    <!-- Done リスト -->
+                    <div class="list" id="list-3" data-board="board-1">
+                        <div class="list-header">
+                            <h3 class="list-title" contenteditable="true">Done</h3>
+                            <button class="delete-list-btn" onclick="deleteList('list-3')">×</button>
+                        </div>
+                        <div class="cards-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        </div>
+                        <button class="add-card-btn" onclick="addCard('list-3')">+ カードを追加</button>
+                    </div>
+
+                    <!-- 新しいリストを追加ボタン -->
+                    <div class="add-list-container">
+                        <button class="add-list-btn" onclick="addList('board-1')">+ リストを追加</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
