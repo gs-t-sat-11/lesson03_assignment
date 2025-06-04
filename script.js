@@ -3,6 +3,7 @@ let cardCounter = 2; // 初期カードが2つあるため
 let listCounter = 3; // 初期リストが3つあるため
 let boardCounter = 1; // 初期ボードが1つあるため
 let draggedElement = null;
+let draggedList = null;
 
 // DOMContentLoadedイベント
 document.addEventListener('DOMContentLoaded', function() {
@@ -106,8 +107,9 @@ function addList(boardId) {
     const newListId = `list-${listCounter}`;
     
     const listHtml = `
-        <div class="list" id="${newListId}" data-board="${boardId}">
+        <div class="list" id="${newListId}" data-board="${boardId}" draggable="true" ondragstart="dragList(event)" ondragend="endDragList(event)">
             <div class="list-header">
+                <div class="list-drag-handle">⋮⋮</div>
                 <h3 class="list-title" contenteditable="true">新しいリスト</h3>
                 <button class="delete-list-btn" onclick="deleteList('${newListId}')">×</button>
             </div>
@@ -159,7 +161,7 @@ function addBoard() {
                 <h2 class="board-title" contenteditable="true">新しいボード</h2>
                 <button class="delete-board-btn" onclick="deleteBoard('${newBoardId}')">×</button>
             </div>
-            <div class="lists-container">
+            <div class="lists-container" ondrop="dropList(event)" ondragover="allowDropList(event)">
                 <div class="add-list-container">
                     <button class="add-list-btn" onclick="addList('${newBoardId}')">+ リストを追加</button>
                 </div>
@@ -384,4 +386,80 @@ function clearSearch() {
     cards.forEach(card => {
         card.style.border = '';
     });
+}
+
+// リストドラッグ開始
+function dragList(event) {
+    // ドラッグハンドル以外からの開始は無効にする
+    if (!event.target.classList.contains('list-drag-handle')) {
+        event.preventDefault();
+        return;
+    }
+    
+    draggedList = event.currentTarget;
+    event.currentTarget.classList.add('list-dragging');
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/html', event.currentTarget.outerHTML);
+}
+
+// リストドラッグ終了
+function endDragList(event) {
+    event.currentTarget.classList.remove('list-dragging');
+    draggedList = null;
+}
+
+// リストドロップ許可
+function allowDropList(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    
+    const listsContainer = event.currentTarget;
+    listsContainer.classList.add('list-drag-over');
+    
+    listsContainer.addEventListener('dragleave', function(e) {
+        if (!listsContainer.contains(e.relatedTarget)) {
+            listsContainer.classList.remove('list-drag-over');
+        }
+    });
+}
+
+// リストドロップ
+function dropList(event) {
+    event.preventDefault();
+    const listsContainer = event.currentTarget;
+    listsContainer.classList.remove('list-drag-over');
+    
+    if (draggedList && draggedList.classList.contains('list')) {
+        // ドロップ位置を計算
+        const afterElement = getListDragAfterElement(listsContainer, event.clientX);
+        
+        if (afterElement == null) {
+            // 最後の位置（add-list-containerの前）に挿入
+            const addListContainer = listsContainer.querySelector('.add-list-container');
+            listsContainer.insertBefore(draggedList, addListContainer);
+        } else {
+            listsContainer.insertBefore(draggedList, afterElement);
+        }
+        
+        draggedList.classList.remove('list-dragging');
+        draggedList = null;
+        
+        saveToLocalStorage();
+    }
+}
+
+// リストドロップ位置を決定する関数（水平方向）
+function getListDragAfterElement(container, x) {
+    const draggableElements = [...container.querySelectorAll('.list:not(.list-dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = x - box.left - box.width / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
 }

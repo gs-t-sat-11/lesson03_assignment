@@ -293,6 +293,38 @@ body {
     border: 2px dashed #999;
 }
 
+/* リストドラッグ関連スタイル */
+.list-drag-handle {
+    cursor: grab;
+    color: #999;
+    font-size: 1rem;
+    padding: 0.25rem;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.list-drag-handle:hover {
+    color: #666;
+}
+
+.list-drag-handle:active {
+    cursor: grabbing;
+}
+
+.list.list-dragging {
+    opacity: 0.6;
+    transform: rotate(3deg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.lists-container.list-drag-over {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
     .header {
