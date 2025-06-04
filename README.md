@@ -16,3 +16,7 @@ Claude Code Action で Trello 風タスク管理アプリ
 ## ⑥ 難しかった点・次回トライしたいこと（又は機能）
 
 ## ⑦ フリー項目（感想、シェアしたいこと等なんでも）
+
+## ⑧ 参考資料
+
+- [Claude Code Action の使い方](https://zenn.dev/acntechjp/articles/3f361da473eac8)
