@@ -257,9 +257,27 @@ function getDragAfterElement(container, y) {
 // 編集可能要素のイベントハンドリング
 document.addEventListener('click', function(event) {
     if (event.target.contentEditable === 'true') {
+        let isComposing = false;
+        
+        // IME composition events
+        event.target.addEventListener('compositionstart', function() {
+            isComposing = true;
+        });
+        
+        event.target.addEventListener('compositionend', function() {
+            isComposing = false;
+            saveToLocalStorage();
+        });
+        
+        event.target.addEventListener('input', function() {
+            if (!isComposing) {
+                saveToLocalStorage();
+            }
+        });
+        
         event.target.addEventListener('blur', saveToLocalStorage);
         event.target.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !isComposing) {
                 e.target.blur();
             }
         });
