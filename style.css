@@ -297,16 +297,25 @@ body {
 .list-drag-handle {
     cursor: grab;
     color: #999;
-    font-size: 1rem;
-    padding: 0.25rem;
+    font-size: 1.2rem;
+    padding: 0.5rem;
     user-select: none;
     display: flex;
     align-items: center;
-    transition: color 0.3s ease;
+    justify-content: center;
+    transition: all 0.3s ease;
+    min-width: 24px;
+    min-height: 24px;
+    position: relative;
+    flex-shrink: 0;
+    border-radius: 4px;
+    font-weight: bold;
 }
 
 .list-drag-handle:hover {
     color: #666;
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
 }
 
 .list-drag-handle:active {

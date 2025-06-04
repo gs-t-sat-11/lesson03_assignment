@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初期化時にローカルストレージからデータを読み込み
     loadFromLocalStorage();
+    
+    // 初期状態でもイベントリスナーを設定
+    attachEventListeners();
 });
 
 // ローカルストレージにデータを保存
@@ -64,6 +67,28 @@ function attachEventListeners() {
         });
         container.addEventListener('dragover', function(e) {
             allowDrop(e);
+        });
+    });
+    
+    // すべてのリストにドラッグイベントを設定
+    const lists = document.querySelectorAll('.list');
+    lists.forEach(list => {
+        list.addEventListener('dragstart', function(e) {
+            dragList(e);
+        });
+        list.addEventListener('dragend', function(e) {
+            endDragList(e);
+        });
+    });
+    
+    // すべてのリストコンテナにドロップイベントを設定
+    const listsContainers = document.querySelectorAll('.lists-container');
+    listsContainers.forEach(container => {
+        container.addEventListener('drop', function(e) {
+            dropList(e);
+        });
+        container.addEventListener('dragover', function(e) {
+            allowDropList(e);
         });
     });
 }
@@ -137,6 +162,23 @@ function addList(boardId) {
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
+    
+    // 新しく追加されたリストにドラッグイベントリスナーを設定
+    newList.addEventListener('dragstart', function(e) {
+        dragList(e);
+    });
+    newList.addEventListener('dragend', function(e) {
+        endDragList(e);
+    });
+    
+    // 新しく追加されたカードコンテナにドロップイベントリスナーを設定
+    const cardsContainer = newList.querySelector('.cards-container');
+    cardsContainer.addEventListener('drop', function(e) {
+        drop(e);
+    });
+    cardsContainer.addEventListener('dragover', function(e) {
+        allowDrop(e);
+    });
     
     saveToLocalStorage();
 }
@@ -396,23 +438,49 @@ function clearSearch() {
 
 // リストドラッグ開始
 function dragList(event) {
-    // ドラッグハンドル以外からの開始は無効にする
+    console.log('dragList called', event.target, event.currentTarget);
+    
+    // contenteditable要素からのドラッグは絶対に無効にする
+    if (event.target.contentEditable === 'true' || event.target.closest('[contenteditable="true"]')) {
+        console.log('Drag prevented: contenteditable element');
+        event.preventDefault();
+        return;
+    }
+    
+    // 削除ボタンからのドラッグも無効にする
+    if (event.target.classList.contains('delete-list-btn') || event.target.closest('.delete-list-btn')) {
+        console.log('Drag prevented: delete button');
+        event.preventDefault();
+        return;
+    }
+    
+    // ドラッグハンドルを探す
     const dragHandle = event.currentTarget.querySelector('.list-drag-handle');
     if (!dragHandle) {
+        console.log('No drag handle found');
         event.preventDefault();
         return;
     }
     
-    // ドラッグハンドル要素自体、またはその子要素からのドラッグのみ許可
-    if (!event.target.classList.contains('list-drag-handle') && !dragHandle.contains(event.target)) {
+    // ドラッグハンドルからの開始かチェック（より柔軟に）
+    const isFromDragHandle = event.target === dragHandle || 
+                           dragHandle.contains(event.target) ||
+                           event.target.classList.contains('list-drag-handle');
+    
+    console.log('isFromDragHandle:', isFromDragHandle, 'target:', event.target, 'dragHandle:', dragHandle);
+    
+    if (!isFromDragHandle) {
+        console.log('Drag prevented: not from drag handle');
         event.preventDefault();
         return;
     }
     
+    console.log('Drag started successfully');
     draggedList = event.currentTarget;
     event.currentTarget.classList.add('list-dragging');
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/html', event.currentTarget.outerHTML);
+    event.dataTransfer.setData('text/plain', event.currentTarget.id);
 }
 
 // リストドラッグ終了
